@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="./css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css" />
+  <link rel="shortcut icon" href="./img/favicon.svg" type="image/x-icon" />
+  <title>Resume Checker</title>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <!-- Nav bar -->
+      <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">Resume Checker</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="#">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="#">Resume</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="#">About</a>
+              </li>
+            </ul>
+            <div data-nonAuthenticated>
+              <a data-page="register" class="btn btn-primary">Register</a>
+              <a data-page="login" class="btn btn-primary">Login</a>
+            </div>
+            <div data-authenticated>
+              <img src="img/person.svg" alt="person" width="30">&nbsp;<span class="text-white">Admin Account</span><button
+                class="btn btn-primary" id="signout">Logout</button>
+            </div>
+            <form class="d-flex" role="search">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-primary" type="submit">Search</button>
+            </form>
+          </div>
+        </div>
+      </nav>
+    </header>
+  </div>
+
+
+  <!-- Terms of Service -->
+  <dialog id="noticeDialog" class="alert alert-dark text-white h4 align-self-center">
+    <div class="container">
+      <div class="card">
+        <div class="card-header h2 text-white bg-info text-center">
+          Terms and Conditions
+        </div>
+        <div class="card-body">
+          <ol>
+            <li>These terms and conditions govern your use of the website. By accessing or using the Website, you agree
+              to be bound by these Terms. If you do not agree to these Terms, you may not access or use the Website.
+            </li>
+            <li>Your use of the Website is also governed by our Privacy Policy, which is incorporated by reference into
+              these Terms. Please review our Privacy Policy to understand our practices regarding the collection and use
+              of your information.</li>
+            <li>In order to access certain features of the Website, you may need to create a user account. You are
+              responsible for maintaining the confidentiality of your account credentials and for all activities that
+              occur under your account.</li>
+          </ol>
+          <hr>
+          <div class="input-group mb-3">
+            <div class="input-group-text">
+              <input class="form-check-input mt-0" type="checkbox" value=""
+                aria-label="Checkbox for following text input" id="agree">
+            </div>
+            <input type="text" class="form-control" aria-label="I agree to terms & conditions" value="I agree" disabled>
+          </div>
+        </div>
+        <form method="dialog" class="text-center">
+          <button class="btn btn-lg btn-info" id="noticeButton">OK</button>
+        </form>
+      </div>
+    </div>
+  </dialog>
+  <hr>
+
+
+  <!-- Not found page -->
+  <section id="404">
+    <div class="container">
+      <div class="card">
+        <div class="card-body text-center">
+          <h1>404</h1>
+          <h2 class="">Page Not Found</h2>
+          <p>The page you are looking for may have been moved or deleted.</p>
+          <a href="/" class="btn btn-primary">Go to Homepage</a>
+        </div>
+      </div>
+    </div>
+    <br>
+  </section>
+
+  <!-- Home page -->
+  <section id="home" class="py-5 bg-light">
+    <div class="container">
+      <h3 class="text-center mb-4">Welcome to Resume Checker</h3>
+      <hr>
+      <form>
+        <fieldset>
+          <legend class="text-primary">Upload Your Resume</legend>
+          <div class="mb-3">
+            <label for="formFile" class="form-label">Choose Resume File</label>
+            <input class="form-control" type="file" id="formFile">
+          </div>
+          <button type="submit" class="btn btn-primary d-block mx-auto" id="signup">Check Resume</button>
+        </fieldset>
+      </form>
+    </div>
+  </section>
+
+
+  <!-- User evaluation -->
+  <section id="evaluation" class="py-5 bg-light">
+    <div class="container">
+      <div class="text-center mb-4">
+        <h3 class="display-4">Here's what we found!</h3>
+      </div>
+      <hr>
+      <section id="results">
+        <h4 class="text-primary">Results</h4>
+        <p class="lead text-muted">Details of the findings will go here.</p>
+      </section>
+    </div>
+  </section>
+
+  <!-- Resume page -->
+  <section id="resume" class="py-5">
+    <div class="container">
+      <div class="card" style="width: 18rem;">
+        <img class="card-img-top mx-auto p-4" src="./img/file-text.svg" alt="Card image cap" style="max-width: 80%;">
+        <div class="card-body text-center">
+          <h5 class="card-title">Resume #</h5>
+          <p class="card-text text-muted">Details about the resume will be displayed here.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- About page -->
+  <section id="about" class="d-flex justify-content-center align-items-center">
+    <div class="container">
+      <div class="card" style="width: 18rem;">
+        <img class="card-img-top" src="./img/person.svg" alt="Card image cap">
+        <div class="card-body">
+          <h5 class="card-title text-center">Nam Le</h5>
+          <p class="card-text"></p>
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item text-center">nle42@mylangara.ca</li>
+        </ul>
+        <div class="card-body text-center">
+          <a href="#" class="card-link"><img src="./img/gtihub-logo.svg"></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Admin view page -->
+  <section id="admin">
+    <section id="admin" class="container mt-4">
+      <h2>Admin Dashboard</h2>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card text-white bg-primary mb-3">
+            <div class="card-header">Resumes Uploaded</div>
+            <div class="card-body">
+              <h5 class="card-title" id="resumesUploaded">0</h5>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-4">
+          <div class="card text-white bg-success mb-3">
+            <div class="card-header">Users Signed Up</div>
+            <div class="card-body">
+              <h5 class="card-title" id="usersSignedUp">0</h5>
+            </div>
+          </div>
+        </div>
+    
+        <div class="col-md-4">
+          <div class="card text-white bg-warning mb-3">
+            <div class="card-header">Active Users</div>
+            <div class="card-body">
+              <h5 class="card-title" id="activeUsers">0</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+  </section>
+
+  <!-- Login page -->
+  <section id="login" class="py-5">
+    <div class="container">
+      <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white text-center h2" role="heading">
+          Sign In
+        </div>
+        <div class="card-body">
+          <form class="row g-3">
+            <div class="mb-3 row">
+              <label for="email" class="col-sm-3 col-form-label">Email</label>
+              <div class="col-sm-9">
+                <input type="email" class="form-control" id="email" name="email" placeholder="email@example.com"
+                  required>
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label for="password" class="col-sm-3 col-form-label">Password</label>
+              <div class="col-sm-9">
+                <input type="password" class="form-control" id="password" name="password" minlength="8" maxlength="30"
+                  required>
+              </div>
+            </div>
+            <div class="input-group mb-3">
+              <div class="btn-group btn-lg w-100" role="group" aria-label="authentication">
+                <button type="submit" class="btn btn-primary w-50" id="signup">Sign Up</button>
+                <button type="reset" class="btn btn-secondary w-50">Clear</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Signup page -->
+  <section id="signup">
+    <div class="container">
+      <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white text-center h2" role="heading">
+          Sign Up
+        </div>
+        <div class="card-body">
+          <form class="row g-3">
+            <div class="mb-3 row">
+              <label for="email" class="col-sm-3 col-form-label">Email</label>
+              <div class="col-sm-9">
+                <input type="email" class="form-control" id="email" name="email" placeholder="email@example.com"
+                  required>
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label for="password" class="col-sm-3 col-form-label">Password</label>
+              <div class="col-sm-9">
+                <input type="password" class="form-control" id="password" name="password" minlength="8" maxlength="30"
+                  required>
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label for="password" class="col-sm-3 col-form-label">Confirm Password</label>
+              <div class="col-sm-9">
+                <input type="password" class="form-control" id="password" name="password" minlength="8" maxlength="30"
+                  required>
+              </div>
+            </div>
+            <div class="input-group mb-3">
+              <div class="btn-group btn-lg w-100" role="group" aria-label="authentication">
+                <button type="submit" class="btn btn-primary w-50" id="signup">Sign Up</button>
+                <button type="reset" class="btn btn-secondary w-50">Clear</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="footer">
+    <div class="container">
+      <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+        <div class="col-md-4 d-flex align-items-center">
+          <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1">
+            <svg class="bi" width="30" height="24">
+              <use xlink:href="#bootstrap"></use>
+            </svg>
+          </a>
+          <span class="mb-3 mb-md-0 text-body-secondary">© 2024 Resume Checker, Inc</span>
+        </div>
+
+        <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
+          <li class="ms-3"><a class="text-body-secondary" href="#"><img src="img/github.svg" alt="GitHub" width="24"
+                height="24"></a></li>
+          <li class="ms-3"><a class="text-body-secondary" href="#"><img src="img/youtube.svg" alt="Youtube" width="24"
+                height="24"></a></li>
+          <li class="ms-3"><a class="text-body-secondary" href="#"><img src="img/instagram.svg" alt="instagram"
+                width="24" height="24"></a></li>
+        </ul>
+      </footer>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="js/script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+</body>
+
+</html>
