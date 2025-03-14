@@ -17,29 +17,29 @@
       <!-- Nav bar -->
       <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-          <a class="navbar-brand" href="#">Resume Checker</a>
+          <a class="navbar-brand" page="home">Resume Checker</a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="#">Home</a>
+                <a class="nav-link" aria-current="page" page="home">Home</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="#">Resume</a>
+                <a class="nav-link" aria-current="page" page="resume">Resume</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="#">About</a>
+                <a class="nav-link" aria-current="page" page="about">About</a>
               </li>
             </ul>
-            <div data-nonAuthenticated>
-              <a data-page="register" class="btn btn-primary">Register</a>
-              <a data-page="login" class="btn btn-primary">Login</a>
+            <div nonAuthenticated>
+              <a page="signup" class="btn btn-primary">Sign Up</a>
+              <a page="signin" class="btn btn-primary">Sign In</a>
             </div>
-            <div data-authenticated>
-              <img src="img/person.svg" alt="person" width="30">&nbsp;<span class="text-white">Admin Account</span><button
-                class="btn btn-primary" id="signout">Logout</button>
+            <div authenticated>
+              <img src="img/person.svg" alt="person" width="30">&nbsp;<span class="text-white">Admin Account</span>
+              <button page="signout" class="btn btn-primary">Sign Out</button>
             </div>
             <form class="d-flex" role="search">
               <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
@@ -97,7 +97,7 @@
           <h1>404</h1>
           <h2 class="">Page Not Found</h2>
           <p>The page you are looking for may have been moved or deleted.</p>
-          <a href="/" class="btn btn-primary">Go to Homepage</a>
+          <a page="home" class="btn btn-primary">Go to Homepage</a>
         </div>
       </div>
     </div>
@@ -152,8 +152,8 @@
 
 
   <!-- About page -->
-  <section id="about" class="d-flex justify-content-center align-items-center">
-    <div class="container">
+  <section id="about">
+    <div class="container d-flex align-items-center justify-content-center">
       <div class="card" style="width: 18rem;">
         <img class="card-img-top" src="./img/person.svg" alt="Card image cap">
         <div class="card-body">
@@ -206,8 +206,8 @@
     
   </section>
 
-  <!-- Login page -->
-  <section id="login" class="py-5">
+  <!-- Sign In page -->
+  <section id="signin" class="py-5">
     <div class="container">
       <div class="card shadow-lg">
         <div class="card-header bg-primary text-white text-center h2" role="heading">
@@ -284,6 +284,20 @@
     </div>
   </section>
 
+  <!-- signout -->
+  <section id="signout">
+    <div class="container">
+      <div class="card">
+        <div class="card-body text-center">
+          <h1>Sign Out Successful</h1>
+          <br>
+          <a page="home" class="btn btn-primary">Go Back Homepage</a>
+        </div>
+      </div>
+    </div>
+    <br>
+  </section>
+
   <!-- Footer -->
   <footer id="footer">
     <div class="container">
@@ -310,8 +324,8 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="js/bootstrap.bundle.min.js"></script>
-  <script type="module" src="js/script.js"></script>
+  <!-- <script src="js/bootstrap.bundle.min.js"></script> -->
+  <script type="module" src="js/home.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 </body>
