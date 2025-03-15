@@ -1,42 +1,41 @@
-const { MongoClient } = require('mongodb');
+const { signInUser } = require("../controllers/userController");
 
-async function main() {
-    const uri = "mongodb+srv://mongo:mongo@cluster2030.9fajz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster2030";
+(() => {
+    const connectToMongo = require("./Utility Module/mongoDBConnect")
+    const requestResponseLogger = require("./Utility Module/requestResLogger")
+    const { signUpUser, signInUser } = require("../controllers/userController");
 
-    const client = new MongoClient(uri);
+    console.log(`current directory is ${__dirname}`)
+    const homeController = require(`${__dirname}/../controllers/homeController`)
+    const memberController = require(`${__dirname}/../controllers/memberController`)
+    const config = require(`${__dirname}/config/config`)
+    const utils = require(`${__dirname}/utils`)
+    const express = require("express")
 
-    try {
-        await client.connect();
-        // await listDatabases(client);
-        // await createListings(client, {name: "Nam1", password: "Nam1"})
-        await createMultipleListings(client, [{name: "Nam2", password: "Nam2"}, {name: "Nam3", password: "Nam3"}]);
-    } catch (e) {
-        console.error(e);
-    } finally {
-        await client.close();
-    }
+    const app = express()
+
+    connectToMongo("mongodb+srv://mongo:mongo@cluster2030.9fajz.mongodb.net/");
+
     
-}
-async function createMultipleListings(client, newListings) {
-    const result = await client.db("Database").collection("Users").insertMany(newListings);
-
-    console.log(`${result.insertedCount} New Listing created with the following id(s): `);
-    console.log(result.insertedIds)
-}   
-
-async function createListings(client, newListing) {
-    const result = await client.db("Database").collection("Users").insertOne(newListing);
-
-    console.log(`New Listing created with the following id: ${result.insertedId}`);
-}   
-
-main().catch(console.error);
-
-async function listDatabases(client) {
-    const databasesList = await client.db().admin().listDatabases();
-
-    console.log("Databases: ");
-    databasesList.databases.forEach(db => {
-        console.log(`- ${db.name}`);
+    app.use(express.static(config.ROOT))
+    app.use(express.json())
+    app.use(express.urlencoded({ extended: false }))
+    app.use((request, response, next) => {
+        utils.logRequest(request)
+        next()
     })
-} 
+    app.use(homeController)
+    app.use(memberController)
+
+    // Middleware function to add all the api request data in mongoDb
+    app.use(requestResponseLogger)
+
+     // All the routes of the api and their respective controller
+    app.post("/api/user/signup", signUpUser)
+    app.post("/api/user/signin", signInUser)
+
+    // Start Node.js HTTP webapp
+    app.listen(config.PORT, "localhost", () => {
+        console.log(`\t|app listening on ${config.PORT}`)
+    })
+})()
