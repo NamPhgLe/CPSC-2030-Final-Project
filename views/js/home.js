@@ -14,9 +14,7 @@
       };
 
  
-    const sections = document.querySelectorAll("section");
-
-
+    
     const show = (section) => { section.style.display = 'block'; }
     const hide = (section) => { section.style.display = 'none'; }
     
@@ -55,9 +53,9 @@
                 // show(registerWarning)
             }
             else if (reply.role === "member") {
-                // localStorage.setItem("userEmail", reply.email)
+                localStorage.setItem("userEmail", reply.email)
                 displaySection(navigation.home)
-                authorize(true)
+                authorize(true, false)
             }
         }
         else if (!reply.hasOwnProperty("role")) {
@@ -68,16 +66,15 @@
     }
 
 
-
     // signout Function
     const signout = async (event) => {
         event.preventDefault()
 
-        // localStorage.removeItem("userEmail")
+        localStorage.removeItem("userEmail")
 
         window.history.pushState(navigation.home, "", `/${navigation.home.url}`)
         displaySection(navigation.home)
-        authorize(false)
+        authorize(false, false)
     }
 
 
@@ -95,19 +92,19 @@
             // show(signinWarning)
         }
         else if (reply.role === "member") {
-            // localStorage.setItem("userEmail", reply.email)
+            localStorage.setItem("userEmail", reply.email)
             // window.history.pushState(navigation.orders, "", `/${navigation.orders.url}`)
             displaySection(navigation.home)
-            authorize(true)
+            authorize(true, false)
+            document.querySelector('[authenticated] > span').innerHTML = `${email}`
         }
         else if (reply.role === "admin") {
-            // localStorage.setItem("userEmail", reply.email)
-            authorize(true)
+            localStorage.setItem("userEmail", reply.email)
+            displaySection(navigation.home)
+            authorize(true, true)
 
-            const authenticated = document.querySelectorAll('[authenticated]')
-
-            hide(authenticated)
-            authenticated.forEach(element => hide(element))
+            document.querySelector('[authenticated] > span').innerHTML = `Admin`
+            
         }
         // else if (!reply.hasOwnProperty("role")) {
             // registerWarning.innerHTML = 'Passwords do not match. Re-enter your password'
@@ -115,6 +112,7 @@
         // }
     }
     
+    // set active
     const setActivePage = (name) => {
         const navLinks = document.querySelectorAll('.nav-link');
         navLinks.forEach(link => {
@@ -127,6 +125,7 @@
     }
 
     const displaySection = (state) => {
+        const sections = document.querySelectorAll("section");
         sections.forEach(section => {
             const name = section.getAttribute('id');
             if (name === state.section) {
@@ -138,6 +137,7 @@
             }
         });
     }
+
     document.addEventListener("DOMContentLoaded", () => {
         displaySection(navigation.home)
         window.history.replaceState(navigation.home, "", document.location.href);
@@ -165,16 +165,43 @@
 
     })
 
-    const authorize = (isAuthenticated) => {
-        const authenticated = document.querySelectorAll('[authenticated]')
-        const nonAuthenticated = document.querySelector('[nonAuthenticated]')
-        if (isAuthenticated) {
-            authenticated.forEach(element => show(element))
-            hide(nonAuthenticated)
+    document.addEventListener("DOMContentLoaded", () => {
+        if (localStorage.getItem("userEmail") !== null) {
+            if(localStorage.getItem("userEmail") ==="admin@gmail.com"){
+                displaySection(navigation.home)
+                authorize(true, true)
+    
+                const authenticated = document.querySelectorAll('[authenticated]')
+                const authenticatedAdmin = document.querySelectorAll('[authenticatedAdmin]')
+
+                authenticated.forEach(element => hide(element))
+                authenticatedAdmin.forEach(element => hide(element))
+                
+                
+            }
+            authorize(true, false)
         }
         else {
-            authenticated.forEach(element => hide(element))
-            show(nonAuthenticated)
+            authorize(false, false)
+        }
+    })
+
+    const authorize = (isAuthenticated, isAdmin) => {
+        const authenticated = document.querySelectorAll('[authenticated]')
+        const authenticatedAdmin = document.querySelectorAll('[authenticatedAdmin]')
+        const nonAuthenticated = document.querySelectorAll('[nonAuthenticated]')
+        if (isAuthenticated && !isAdmin) {
+            authenticated.forEach(element => show(element));
+            authenticatedAdmin.forEach(element => hide(element));
+            nonAuthenticated.forEach(element => hide(element));
+        } else if(isAdmin){ 
+            authenticated.forEach(element => show(element));
+            authenticatedAdmin.forEach(element => show(element));
+            nonAuthenticated.forEach(element => hide(element));
+        } else {
+            authenticated.forEach(element => hide(element)); 
+            authenticatedAdmin.forEach(element => hide(element));  
+            nonAuthenticated.forEach(element => show(element));
         }
     }
 
