@@ -100,6 +100,7 @@
         }
         else if (reply.role === "admin") {
             localStorage.setItem("userEmail", reply.email)
+            fetchAdminInfo()
             displaySection(navigation.home)
             authorize(true, true)
 
@@ -168,6 +169,7 @@
     document.addEventListener("DOMContentLoaded", () => {
         if (localStorage.getItem("userEmail") !== null) {
             if(localStorage.getItem("userEmail") ==="admin@gmail.com"){
+                fetchAdminInfo()
                 displaySection(navigation.home)
                 authorize(true, true)
     
@@ -205,5 +207,34 @@
         }
     }
 
+    const fetchAdminInfo = async () => {
+        try {
+            const response = await fetch(`/api/userStats`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
 
+            if (!response.ok) {
+                const errorMessage = await response.json();
+                throw new Error(errorMessage.message);
+            }
+
+            const userInfo = await response.json();
+
+            const resumesUploaded  = document.getElementById('resumesUploaded');
+            const usersSignedUp  = document.getElementById('usersSignedUp');
+            const activeUsers = document.getElementById('activeUsers');
+
+            resumesUploaded.innerHTML = ""
+            usersSignedUp.innerHTML = userInfo.userCount;
+            activeUsers.innerHTML = ""
+
+
+
+        } catch (error) {
+            console.error('Failed to fetch orders:', error.message);
+        }
+    }
 })();

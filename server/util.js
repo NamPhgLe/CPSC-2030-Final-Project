@@ -2,13 +2,6 @@
     const MongoClient = require('mongodb').MongoClient
     const connection = require("./config/mongodb_config.js")
     
-    /**
-    * -------------------------------------------------------------------------------------------------------------------------------------------------
-    * 
-    * mongodb+srv://mongo:<db_password>@cluster2030.9fajz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster2030
-    * 
-    * --------------------------------------------------------------------------------------------------------------------------------------------------
-    **/
 
     const getMongoClient = (local = true) => {
         let uri = `mongodb+srv://${connection.USERNAME}:${connection.PASSWORD}@${connection.SERVER}/${connection.DATABASE}?retryWrites=true&w=majority&appName=Cluster2030`
@@ -18,14 +11,6 @@
         console.log(`Connection String<<${uri}`)
         return new MongoClient(uri)
     }
-    //
-    /**
-     * -------------------------------------------------------------------------
-     * 
-     * Data Manipulation Language (DML) functions
-     * 
-     * -------------------------------------------------------------------------
-     **/
     
     //find matching documents
     const find = async (collection, query) => {

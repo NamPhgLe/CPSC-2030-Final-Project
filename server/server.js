@@ -1,9 +1,7 @@
-const { signInUser } = require("../controllers/userController");
-
 (() => {
     const connectToMongo = require("./Utility Module/mongoDBConnect")
     const requestResponseLogger = require("./Utility Module/requestResLogger")
-    const { signUpUser, signInUser } = require("../controllers/userController");
+    const { signUpUser, signInUser, getUserStats } = require("../controllers/userController");
 
     console.log(`current directory is ${__dirname}`)
     const homeController = require(`${__dirname}/../controllers/homeController`)
@@ -27,14 +25,12 @@ const { signInUser } = require("../controllers/userController");
     app.use(homeController)
     app.use(memberController)
 
-    // Middleware function to add all the api request data in mongoDb
     app.use(requestResponseLogger)
 
-     // All the routes of the api and their respective controller
     app.post("/api/user/signup", signUpUser)
     app.post("/api/user/signin", signInUser)
+    app.get("/api/userStats", getUserStats); 
 
-    // Start Node.js HTTP webapp
     app.listen(config.PORT, "localhost", () => {
         console.log(`\t|app listening on ${config.PORT}`)
     })
