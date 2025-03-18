@@ -69,12 +69,30 @@
     // signout Function
     const signout = async (event) => {
         event.preventDefault()
-
+    
         localStorage.removeItem("userEmail")
-
+        localStorage.removeItem("authToken")  
+    
+        const email = localStorage.getItem('userEmail')
+    
+        try {
+            const signoutResponse = await postData('/api/user/signout', { email });
+    
+            if (signoutResponse.success) {
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('authToken'); 
+            } else {
+                console.log('Error:', signoutResponse.error);
+            }
+        } catch (error) {
+            console.error("Error during sign out:", error);
+        }
+    
         window.history.pushState(navigation.home, "", `/${navigation.home.url}`)
+    
         displaySection(navigation.home)
         authorize(false, false)
+    
     }
 
 
@@ -112,7 +130,141 @@
             // show(registerWarning)
         // }
     }
+
+    //post for resume data
+    const postResumeData = async (file) => {
+        try {
+            const formData = new FormData();
+            formData.append('resume', file);
     
+            const response = await fetch('/api/getResumeData', {
+                method: 'POST',
+                body: formData,
+            });
+    
+            const result = await response.json();
+            if (!response.ok) {
+                throw new Error(result.message || 'Failed to upload resume');
+            }
+                
+        } catch (error) {
+            alert('Error uploading resume');
+        }
+    };
+    
+
+    //check resume
+    const resumeData = async (event) => {
+        event.preventDefault();
+        const fileInput = document.getElementById('resumeFile'); 
+        const file = fileInput.files[0];  
+    
+        if (!file) {
+            alert('Please select a resume file');
+            return;
+        }
+    
+        await postResumeData(file);
+        await checkResume(event);
+    };
+    
+    //api key
+    const myHeaders = new Headers();
+    myHeaders.append("apikey", "Dp2UZOsT8ZFjdr3kQjvy8LWctC84xced");
+
+    //Post for api check
+    const postCheckResume = async () => {
+        try {
+            const response = await fetch('/api/checkResume', {
+                method: 'POST',  
+                redirect: 'follow',
+                headers: myHeaders,  
+            });
+    
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Resume check result:', result); 
+                displayParsedData(result.parsedData);
+            } else {
+                throw new Error('Failed to check resume');
+            }
+        } catch (error) {
+            console.error('Error checking resume:', error);
+            alert('Error checking resume');
+        }
+    };
+    // display in html
+    const displayParsedData = (parsedData) => {
+        const data = JSON.parse(parsedData);
+    
+        const resultContainer = document.getElementById('results');
+        
+
+        resultContainer.innerHTML = '';
+        
+
+        let resultHtml = `
+            <h5><strong>Name:</strong> ${data.name}</h5>
+            <h5><strong>Email:</strong> ${data.email}</h5>
+            <hr>
+        `;
+        
+
+        resultHtml += `
+            <h5><strong>Skills:</strong></h5>
+            <ul class="list-group">
+        `;
+        
+        data.skills.forEach(skill => {
+            resultHtml += `<li class="list-group-item">${skill}</li>`;
+        });
+        resultHtml += '</ul><hr>';
+        
+
+        resultHtml += `
+            <h5><strong>Education:</strong></h5>
+            <ul class="list-group">
+        `;
+        
+        data.education.forEach(edu => {
+            resultHtml += `
+                <li class="list-group-item">
+                    <strong>${edu.name}</strong><br>
+                    <small>${edu.dates.join(', ')}</small>
+                </li>
+            `;
+        });
+        resultHtml += '</ul><hr>';
+        
+        resultHtml += `
+            <h5><strong>Experience:</strong></h5>
+            <ul class="list-group">
+        `;
+        
+        data.experience.forEach(exp => {
+            resultHtml += `
+                <li class="list-group-item">
+                    <strong>${exp.title}</strong><br>
+                    <small>${exp.dates.join(' - ')}</small><br>
+                    <strong>Location:</strong> ${exp.location}<br>
+                    <strong>Organization:</strong> ${exp.organization}
+                </li>
+            `;
+        });
+        resultHtml += '</ul>';
+    
+        resultContainer.innerHTML = resultHtml;
+        displaySection(navigation.evaluation)
+
+    };
+
+    // call postCheckResume
+    const checkResume = async (event) => {
+        event.preventDefault();
+        await postCheckResume();
+    }
+    
+      
     // set active
     const setActivePage = (name) => {
         const navLinks = document.querySelectorAll('.nav-link');
@@ -163,27 +315,26 @@
         document.querySelector("#signUpBtn").onclick = signup
         document.querySelector("#signoutBtn").onclick = signout
         document.querySelector("#signinBtn").onclick = signin
+        document.querySelector("#resumeData").onclick = resumeData
+        
 
     })
 
     document.addEventListener("DOMContentLoaded", () => {
         if (localStorage.getItem("userEmail") !== null) {
-            if(localStorage.getItem("userEmail") ==="admin@gmail.com"){
+            const storedEmail = localStorage.getItem("userEmail");
+            if(localStorage.getItem("userEmail") === "admin@gmail.com"){
                 fetchAdminInfo()
                 displaySection(navigation.home)
                 authorize(true, true)
-    
-                const authenticated = document.querySelectorAll('[authenticated]')
-                const authenticatedAdmin = document.querySelectorAll('[authenticatedAdmin]')
 
-                authenticated.forEach(element => hide(element))
-                authenticatedAdmin.forEach(element => hide(element))
+                document.querySelector('[authenticated] span').innerHTML = 'Admin';
                 
-                
+            } else {
+                authorize(true, false)
+                document.querySelector('[authenticated] span').innerHTML = storedEmail;
             }
-            authorize(true, false)
-        }
-        else {
+        } else {
             authorize(false, false)
         }
     })
@@ -222,16 +373,14 @@
             }
 
             const userInfo = await response.json();
-
+            
             const resumesUploaded  = document.getElementById('resumesUploaded');
             const usersSignedUp  = document.getElementById('usersSignedUp');
             const activeUsers = document.getElementById('activeUsers');
 
-            resumesUploaded.innerHTML = ""
-            usersSignedUp.innerHTML = userInfo.userCount;
-            activeUsers.innerHTML = ""
-
-
+            resumesUploaded.innerHTML = userInfo.resumeUploads;  
+            usersSignedUp.innerHTML = userInfo.userCount;       
+            activeUsers.innerHTML = userInfo.activeUsers;      
 
         } catch (error) {
             console.error('Failed to fetch orders:', error.message);

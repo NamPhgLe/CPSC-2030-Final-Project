@@ -7,11 +7,10 @@ const userStatsSchema = require("../models/userStatsSchema")
 const signUpUser = async (req, res) => {
     try {
         const { email, password, logId } = req.body;
-        // encrypting password
+
         const encryptedPass = await bcrypt.hash(password, 10)
         const createMember = await User.create({ email, password: encryptedPass });
 
-        // logs
         const logQuery = await Log.findByIdAndUpdate(logId,
             { Query: createMember, Status_Code: "200" }
             , { new: true })
@@ -78,17 +77,48 @@ const signInUser = async (req, res) => {
 
 }
 
+const signOutUser = async (req, res) => {
+    const { email, logId } = req.body;
+
+    try {
+        const logQuery = await Log.findByIdAndUpdate(logId, 
+            { Query: `User ${email} signed out`, Status_Code: "200" }, 
+            { new: true }
+        );
+
+        const updatedStats = await userStatsSchema.findOneAndUpdate(
+            {},
+            { $inc: { activeUsers: -1 } }, 
+            { upsert: true, new: true }     
+        );
+
+        return res.status(200).json({
+            success: {
+                email: email,
+                message: `${email} logged out successfully.`,
+                updatedStats: updatedStats, 
+            },
+        });
+    } catch (error) {
+        console.log("Error during sign out:", error);
+        return res.status(500).json({ error: "Failed to update active users count" });
+    }
+};
+
+
 const getUserStats = async (req, res) => {
     try {
-        // Find the user stats from the database
         const stats = await userStatsSchema.findOne({});
 
         if (!stats) {
             return res.status(404).json({ error: "No stats found" });
         }
 
-        // Send the userCount as part of the response
-        return res.status(200).json({ userCount: stats.userCount });
+        return res.status(200).json({ 
+            resumeUploads: stats.resumeUploads,
+            userCount: stats.userCount,
+            activeUsers: stats.activeUsers
+        });
     } catch (err) {
         console.log(err);
         return res.status(500).json({ error: 'Error fetching stats' });
@@ -98,5 +128,6 @@ const getUserStats = async (req, res) => {
 module.exports = {
     signUpUser,
     signInUser,
+    signOutUser,
     getUserStats
 }

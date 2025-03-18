@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 
-// Making the schema/structure for the log
 const logSchema = mongoose.Schema({
     TimeStamp: { type: String, default: new Date().toISOString() },
     Method: { type: String, required: true },

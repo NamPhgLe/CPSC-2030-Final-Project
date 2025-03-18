@@ -1,8 +1,8 @@
-const UserStats = (active, resume, count) => {
+const UserStats = (resume, count, active) => {
     return {
-        activeResumes: active,
         resumeUploads: resume,
-        userCount: resume
+        userCount: count,
+        activeUsers: active
     }
 } 
 
