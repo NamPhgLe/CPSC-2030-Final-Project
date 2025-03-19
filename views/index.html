@@ -115,20 +115,30 @@
   <!-- Home page -->
   <section id="home" class="py-5 bg-light">
     <div class="container">
-      <h3 class="text-center mb-4">Welcome to Resume Checker</h3>
-      <hr>
-      <form id="resumeForm">
-        <fieldset>
-            <legend class="text-primary">Upload Your Resume</legend>
-            <div class="mb-3">
-                <label for="resumeFile" class="form-label">Choose Resume File</label>
-                <input class="form-control" type="file" id="resumeFile" name="resume" accept=".docx,.pdf,.txt">
-            </div>
-            <button type="submit" class="btn btn-primary d-block mx-auto" id="resumeData">Check Resume</button>
-        </fieldset>
-    </form>
+        <h3 class="text-center mb-4">Welcome to Resume Checker</h3>
+        <hr>
+        <form id="resumeForm">
+            <fieldset>
+                <legend class="text-primary">Upload Your Resume</legend>
+
+                <!-- File upload option -->
+                <div class="mb-3">
+                    <label for="resumeFile" class="form-label">Choose Resume File</label>
+                    <input class="form-control" type="file" id="resumeFile" name="resumeFile" accept=".docx,.pdf,.txt">
+                </div>
+
+                <!-- URL input option for online resume -->
+                <div class="mb-3">
+                    <label for="resumeUrl" class="form-label">Or Enter Resume URL</label>
+                    <input class="form-control" type="url" id="resumeUrl" name="resumeUrl" placeholder="https://example.com/resume.pdf">
+                </div>
+
+                <button type="submit" class="btn btn-primary d-block mx-auto" id="resumeData">Check Resume</button>
+            </fieldset>
+        </form>
     </div>
-  </section>
+</section>
+
 
 
   <!-- User evaluation -->

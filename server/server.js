@@ -2,7 +2,7 @@
     const connectToMongo = require("./Utility Module/mongoDBConnect")
     const requestResponseLogger = require("./Utility Module/requestResLogger")
     const { signUpUser, signInUser, signOutUser, getUserStats } = require("../controllers/userController")
-    const { getResumeData, upload, checkResume } = require("../controllers/checkerController")
+    const { getResumeData, upload, checkResumeURL, checkResumeFile } = require("../controllers/checkerController")
     const homeController = require(`${__dirname}/../controllers/homeController`)
     const memberController = require(`${__dirname}/../controllers/memberController`)
     const config = require(`${__dirname}/config/config`)
@@ -32,8 +32,8 @@
     app.post("/api/user/signout", signOutUser)
     app.get("/api/userStats", getUserStats); 
     app.post('/api/getResumeData', upload.single('resume'), getResumeData);
-    app.post('/api/checkResume', upload.single('resume'), checkResume);
-    
+    app.post('/api/checkResumeURL', upload.single('resume'), checkResumeURL);
+    app.post('/api/checkResumeFile', upload.single('resume'), checkResumeFile);
     app.listen(config.PORT, "localhost", () => {
         console.log(`\t|app listening on ${config.PORT}`)
     })

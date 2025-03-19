@@ -30,8 +30,9 @@ const getResumeData = async (req, res) => {
         return res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
 };
+
 //get file name 
-const getFileName = () => {
+const checkResumeFile = () => {
     const uploadsDir = path.join(__dirname, 'uploads'); // Path to the uploads folder
     
     // Read the files in the uploads directory
@@ -46,10 +47,10 @@ const getFileName = () => {
 };
 
 // API parser
-const checkResume = async (req, res) => {
+const checkResumeURL = async (req, res) => {
     try {
-        // const fileName = getFileName();  
         const uploadedFileUrl = `https://writing.colostate.edu/guides/documents/resume/functionalsample.pdf`; 
+        // const uploadedFileUrl = req.body.resumeUrl;
 
         var myHeaders = new Headers();
         myHeaders.append("apikey", "Dp2UZOsT8ZFjdr3kQjvy8LWctC84xced");
@@ -82,5 +83,6 @@ const checkResume = async (req, res) => {
 module.exports = {
     getResumeData,
     upload,
-    checkResume
+    checkResumeURL,
+    checkResumeFile
 }

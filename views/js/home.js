@@ -13,8 +13,6 @@
         notFound: { title: "Page Not Found", url: "404", section: "404" }
       };
 
- 
-    
     const show = (section) => { section.style.display = 'block'; }
     const hide = (section) => { section.style.display = 'none'; }
     
@@ -65,7 +63,6 @@
         }
     }
 
-
     // signout Function
     const signout = async (event) => {
         event.preventDefault()
@@ -89,12 +86,15 @@
         }
     
         window.history.pushState(navigation.home, "", `/${navigation.home.url}`)
-    
+        const evaluationPage = document.getElementById('results');
+        if (evaluationPage) {
+            evaluationPage.innerHTML = ''; 
+        }
         displaySection(navigation.home)
         authorize(false, false)
-    
+        resetFormInputs();
+        resetEvaluationOutputs();
     }
-
 
     // signin function
     const signin = async (event) => {
@@ -118,7 +118,7 @@
         }
         else if (reply.role === "admin") {
             localStorage.setItem("userEmail", reply.email)
-            fetchAdminInfo()
+            displayAdminInfo()
             displaySection(navigation.home)
             authorize(true, true)
 
@@ -129,6 +129,48 @@
             // registerWarning.innerHTML = 'Passwords do not match. Re-enter your password'
             // show(registerWarning)
         // }
+    }
+
+    const authorize = (isAuthenticated, isAdmin) => {
+        const authenticated = document.querySelectorAll('[authenticated]')
+        const authenticatedAdmin = document.querySelectorAll('[authenticatedAdmin]')
+        const nonAuthenticated = document.querySelectorAll('[nonAuthenticated]')
+        if (isAuthenticated && !isAdmin) {
+            authenticated.forEach(element => show(element));
+            authenticatedAdmin.forEach(element => hide(element));
+            nonAuthenticated.forEach(element => hide(element));
+        } else if(isAdmin){ 
+            authenticated.forEach(element => show(element));
+            authenticatedAdmin.forEach(element => show(element));
+            nonAuthenticated.forEach(element => hide(element));
+        } else {
+            authenticated.forEach(element => hide(element)); 
+            authenticatedAdmin.forEach(element => hide(element));  
+            nonAuthenticated.forEach(element => show(element));
+        }
+    }
+
+    const resetFormInputs = () => {
+        const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"], textarea');
+        inputs.forEach(input => {
+            input.value = ''; 
+        });
+    };
+
+    const resetEvaluationOutputs = () => { 
+        const output = document.getElementById('results');
+        output.innerHTML = "";
+    }
+     // set active
+     const setActivePage = (name) => {
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            if (link.getAttribute('page') === name) {
+                link.classList.add('active'); 
+            } else {
+                link.classList.remove('active');
+            }
+        });
     }
 
     //post for resume data
@@ -152,21 +194,6 @@
         }
     };
     
-
-    //check resume
-    const resumeData = async (event) => {
-        event.preventDefault();
-        const fileInput = document.getElementById('resumeFile'); 
-        const file = fileInput.files[0];  
-    
-        if (!file) {
-            alert('Please select a resume file');
-            return;
-        }
-    
-        await postResumeData(file);
-        await checkResume(event);
-    };
     
     //api key
     const myHeaders = new Headers();
@@ -175,24 +202,48 @@
     //Post for api check
     const postCheckResume = async () => {
         try {
-            const response = await fetch('/api/checkResume', {
-                method: 'POST',  
-                redirect: 'follow',
-                headers: myHeaders,  
-            });
-    
+            let formData = new FormData();
+
+            formData.append('resumeUrl', resumeUrl);
+                const response = await fetch('/api/checkResumeURL', {
+                    method: 'POST',
+                    body: formData
+                });
+       
             if (response.ok) {
                 const result = await response.json();
-                console.log('Resume check result:', result); 
-                displayParsedData(result.parsedData);
-            } else {
-                throw new Error('Failed to check resume');
-            }
-        } catch (error) {
-            console.error('Error checking resume:', error);
-            alert('Error checking resume');
+                console.log('Resume check result:', result);
+                displayParsedData(result.parsedData);  
+            } 
+        } catch {
+            alert('Error checking resume URL');
         }
     };
+
+    // call postCheckResume
+    const checkResume = async (event) => {
+        event.preventDefault();
+        const fileInput = document.getElementById('resumeFile');
+        const urlInput = document.getElementById('resumeUrl');
+        
+        const file = fileInput.files[0];
+        const resumeUrl = urlInput.value.trim();
+    
+        if (!file && !resumeUrl) {
+            alert('Please select a resume file or provide a resume URL.');
+            return;
+        }
+    
+        if (file) {
+            await postResumeData(file);
+        }
+    
+        if (resumeUrl) {
+            await postCheckResume();
+        }
+        
+    }
+
     // display in html
     const displayParsedData = (parsedData) => {
         const data = JSON.parse(parsedData);
@@ -258,25 +309,6 @@
 
     };
 
-    // call postCheckResume
-    const checkResume = async (event) => {
-        event.preventDefault();
-        await postCheckResume();
-    }
-    
-      
-    // set active
-    const setActivePage = (name) => {
-        const navLinks = document.querySelectorAll('.nav-link');
-        navLinks.forEach(link => {
-            if (link.getAttribute('page') === name) {
-                link.classList.add('active'); 
-            } else {
-                link.classList.remove('active');
-            }
-        });
-    }
-
     const displaySection = (state) => {
         const sections = document.querySelectorAll("section");
         sections.forEach(section => {
@@ -291,74 +323,7 @@
         });
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-        displaySection(navigation.home)
-        window.history.replaceState(navigation.home, "", document.location.href);
-        document.onclick = (event) => {
-            const page = event.target.getAttribute('page')
-            if (page) {
-                event.preventDefault()
-                window.history.pushState(navigation[page], "", `/ ${navigation[page].url} `)
-                displaySection(navigation[page])
-            }
-        }
-        const noticeDialog = document.querySelector("#noticeDialog")
-        const errors = document.querySelectorAll('section div[name="error"]')
-        errors.forEach(error => hide(error))
-
-        noticeDialog.showModal()
-        document.querySelector("#noticeButton").onclick = (event) => {
-            event.preventDefault()
-            if (document.querySelector("#agree").checked)
-                noticeDialog.close()
-        }
-        document.querySelector("#signUpBtn").onclick = signup
-        document.querySelector("#signoutBtn").onclick = signout
-        document.querySelector("#signinBtn").onclick = signin
-        document.querySelector("#resumeData").onclick = resumeData
-        
-
-    })
-
-    document.addEventListener("DOMContentLoaded", () => {
-        if (localStorage.getItem("userEmail") !== null) {
-            const storedEmail = localStorage.getItem("userEmail");
-            if(localStorage.getItem("userEmail") === "admin@gmail.com"){
-                fetchAdminInfo()
-                displaySection(navigation.home)
-                authorize(true, true)
-
-                document.querySelector('[authenticated] span').innerHTML = 'Admin';
-                
-            } else {
-                authorize(true, false)
-                document.querySelector('[authenticated] span').innerHTML = storedEmail;
-            }
-        } else {
-            authorize(false, false)
-        }
-    })
-
-    const authorize = (isAuthenticated, isAdmin) => {
-        const authenticated = document.querySelectorAll('[authenticated]')
-        const authenticatedAdmin = document.querySelectorAll('[authenticatedAdmin]')
-        const nonAuthenticated = document.querySelectorAll('[nonAuthenticated]')
-        if (isAuthenticated && !isAdmin) {
-            authenticated.forEach(element => show(element));
-            authenticatedAdmin.forEach(element => hide(element));
-            nonAuthenticated.forEach(element => hide(element));
-        } else if(isAdmin){ 
-            authenticated.forEach(element => show(element));
-            authenticatedAdmin.forEach(element => show(element));
-            nonAuthenticated.forEach(element => hide(element));
-        } else {
-            authenticated.forEach(element => hide(element)); 
-            authenticatedAdmin.forEach(element => hide(element));  
-            nonAuthenticated.forEach(element => show(element));
-        }
-    }
-
-    const fetchAdminInfo = async () => {
+    const displayAdminInfo = async () => {
         try {
             const response = await fetch(`/api/userStats`, {
                 method: 'GET',
@@ -386,4 +351,54 @@
             console.error('Failed to fetch orders:', error.message);
         }
     }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        displaySection(navigation.home)
+        window.history.replaceState(navigation.home, "", document.location.href);
+        document.onclick = (event) => {
+            const page = event.target.getAttribute('page')
+            if (page) {
+                event.preventDefault()
+                window.history.pushState(navigation[page], "", `/ ${navigation[page].url} `)
+                displaySection(navigation[page])
+            }
+        }
+        const noticeDialog = document.querySelector("#noticeDialog")
+        const errors = document.querySelectorAll('section div[name="error"]')
+        errors.forEach(error => hide(error))
+
+        noticeDialog.showModal()
+        document.querySelector("#noticeButton").onclick = (event) => {
+            event.preventDefault()
+            if (document.querySelector("#agree").checked)
+                noticeDialog.close()
+        }
+        document.querySelector("#signUpBtn").onclick = signup
+        document.querySelector("#signoutBtn").onclick = signout
+        document.querySelector("#signinBtn").onclick = signin
+        document.querySelector("#resumeData").onclick = checkResume
+        
+
+    })
+
+    document.addEventListener("DOMContentLoaded", () => {
+        if (localStorage.getItem("userEmail") !== null) {
+            const storedEmail = localStorage.getItem("userEmail");
+            if(localStorage.getItem("userEmail") === "admin@gmail.com"){
+                displayAdminInfo()
+                displaySection(navigation.home)
+                authorize(true, true)
+
+                document.querySelector('[authenticated] span').innerHTML = 'Admin';
+                
+            } else {
+                authorize(true, false)
+                document.querySelector('[authenticated] span').innerHTML = storedEmail;
+            }
+        } else {
+            authorize(false, false)
+        }
+    })
+
+    
 })();
