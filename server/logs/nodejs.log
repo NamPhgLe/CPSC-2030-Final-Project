@@ -623,3 +623,5 @@
 {"date":"2025-03-19T22:59:18.786Z","url":"/api/user/signout","method":"POST"}
 {"date":"2025-03-19T22:59:23.530Z","url":"/api/checkResumeURL","method":"POST"}
 {"date":"2025-03-19T22:59:30.248Z","url":"/api/user/signin","method":"POST"}
+{"date":"2025-04-03T08:42:33.265Z","url":"/api/userStats","method":"GET"}
+{"date":"2025-04-03T08:42:48.528Z","url":"/api/checkResumeFile","method":"POST"}

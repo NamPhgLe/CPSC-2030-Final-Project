@@ -1,88 +1,56 @@
-const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
+const { OpenAI } = require("openai");
 
-//Multer storage
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');  
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname)); 
+const openai = new OpenAI({
+    apiKey: '', // Replace with your actual OpenAI API key
+  });
+
+
+  const checkResumeFile = async (req, res) => {
+    let { additionalInfo } = req.body; 
+
+    let role = additionalInfo.role;
+    let requirements = additionalInfo.requirements;
+    let resume = additionalInfo.resume;
+
+    if (!additionalInfo) {
+        additionalInfo = "no requirements";
     }
-});
 
-// Initialize multer
-const upload = multer({ storage: storage });
-
-// Upload resume file
-const getResumeData = async (req, res) => {
+    let response;
     try {
-        if (!req.file) {
-            return res.status(400).json({ message: 'No resume file uploaded' });
+        if(role === 'employee'){
+            response = await openai.chat.completions.create({
+                model: 'gpt-3.5-turbo',
+                messages: [
+                  { role: 'system', content: `You are an AI that analyzes resume` },
+                  { role: 'user', content: `When forming your responds add html tags for example <h1> and <p> and do not respond with a html code box. Analyze the following resume of this file:\n\n${resume} and provide feedback. Highlight keywords in yellow using tags <mark> and instructions mentioned: ${requirements}. In the end provide feedback to improve resume` },
+                ],
+                max_tokens: 1000, 
+              });
+        } else if(role === 'employer'){
+            response = await openai.chat.completions.create({
+                model: 'gpt-3.5-turbo',
+                messages: [
+                  { role: 'system', content: `You are an AI that analyzes resume` },
+                  { role: 'user', content: `When forming your responds add html tags for example <h1> and <p> and do not respond with a html code box. Analyze the following resume of this file:\n\n${resume}. Highlight keywords in yellow using tags <mark> and requirements mentioned: ${requirements}. In the end respond give your thoughts on the resume and would the resume meet the experience given the requirements mentioned` },
+                ],
+                max_tokens: 1000, 
+              });
         }
-
-        return res.status(200).json({
-            message: 'Resume uploaded successfully!',
-            filePath: req.file.path, 
-        });
-        
+      
+  
+      const openAIResponse = response.choices[0].message.content.trim();
+      console.log('Response from OpenAI:', openAIResponse);
+  
+      res.status(200).json(openAIResponse);
     } catch (error) {
-        return res.status(500).json({ message: 'Internal Server Error', error: error.message });
+      console.error('Error calling OpenAI API:', error);
+      res.status(500).json({ message: 'Failed to analyze the resume with ChatGPT', error: error.message });
     }
-};
-
-//get file name 
-const checkResumeFile = () => {
-    const uploadsDir = path.join(__dirname, 'uploads'); // Path to the uploads folder
-    
-    // Read the files in the uploads directory
-    const files = fs.readdirSync(uploadsDir);
-    
-    if (files.length === 0) {
-        throw new Error('No files found in the uploads directory');
-    }
-
-    // Get the first file in the directory
-    return files[0];
-};
-
-// API parser
-const checkResumeURL = async (req, res) => {
-    try {
-        const uploadedFileUrl = `https://writing.colostate.edu/guides/documents/resume/functionalsample.pdf`; 
-        // const uploadedFileUrl = req.body.resumeUrl;
-
-        var myHeaders = new Headers();
-        myHeaders.append("apikey", "Dp2UZOsT8ZFjdr3kQjvy8LWctC84xced");
-
-        const requestOptions = {
-            method: 'GET',
-            redirect: 'follow',
-            headers: myHeaders,
-        };
-
-        const response = await fetch(`https://api.apilayer.com/resume_parser/url?url=${uploadedFileUrl}`, requestOptions);
-
-        if (!response.ok) {
-            const errorDetails = await response.text();
-            throw new Error(`Error fetching resume data: ${response.statusText} - ${errorDetails}`);
-        }
-
-        const result = await response.text(); 
-
-        res.status(200).json({
-            message: 'Resume parsed successfully!',
-            parsedData: result 
-        });
-
-    } catch (error) {
-        res.status(500).json({ message: 'Internal Server Error', error: error.message });
-    }
-};
+  };
 
 module.exports = {
-    getResumeData,
-    upload,
-    checkResumeURL,
     checkResumeFile
 }

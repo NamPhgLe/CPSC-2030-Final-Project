@@ -172,142 +172,68 @@
             }
         });
     }
+    // fetch and display evaluation
+    const getResumeAnalysis = async (file) => {
+        
+        let textA = document.getElementById('resumeRequirements').value;
+        let selectedRole = document.querySelector('input[name="role"]:checked').value;
+        let additionalInfo = {
+            role: selectedRole,
+            requirements: textA,
+            resume: file
+        };
 
-    //post for resume data
-    const postResumeData = async (file) => {
         try {
-            const formData = new FormData();
-            formData.append('resume', file);
-    
-            const response = await fetch('/api/getResumeData', {
+            const response = await fetch('/api/checkResumeFile', {
                 method: 'POST',
-                body: formData,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ additionalInfo }),
             });
-    
-            const result = await response.json();
-            if (!response.ok) {
-                throw new Error(result.message || 'Failed to upload resume');
+
+            const data = await response.json();
+        if (data) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <h4 class="text-primary">Results</h4>
+                <p class="lead text-muted">${data}</p>
+            `;
+            displaySection(navigation.evaluation)
+            } else {
+                const resultsDiv = document.getElementById('results');
+                resultsDiv.innerHTML = `
+                    <h4 class="text-danger">Error</h4>
+                    <p class="lead text-muted">No feedback received. Please try again later.</p>
+                `;
             }
-                
         } catch (error) {
-            alert('Error uploading resume');
-        }
-    };
-    
-    
-    //api key
-    const myHeaders = new Headers();
-    myHeaders.append("apikey", "Dp2UZOsT8ZFjdr3kQjvy8LWctC84xced");
-
-    //Post for api check
-    const postCheckResume = async () => {
-        try {
-            let formData = new FormData();
-
-            formData.append('resumeUrl', resumeUrl);
-                const response = await fetch('/api/checkResumeURL', {
-                    method: 'POST',
-                    body: formData
-                });
-       
-            if (response.ok) {
-                const result = await response.json();
-                console.log('Resume check result:', result);
-                displayParsedData(result.parsedData);  
-            } 
-        } catch {
-            alert('Error checking resume URL');
+            console.error('Error:', error);
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <h4 class="text-danger">Error</h4>
+                <p class="lead text-muted">There was an issue retrieving the results. Please try again later.</p>
+            `;
         }
     };
 
-    // call postCheckResume
+    // check if valid file and call postResumeData
     const checkResume = async (event) => {
         event.preventDefault();
         const fileInput = document.getElementById('resumeFile');
-        const urlInput = document.getElementById('resumeUrl');
-        
         const file = fileInput.files[0];
-        const resumeUrl = urlInput.value.trim();
     
-        if (!file && !resumeUrl) {
+        if (!file) {
             alert('Please select a resume file or provide a resume URL.');
             return;
         }
     
         if (file) {
-            await postResumeData(file);
-        }
-    
-        if (resumeUrl) {
-            await postCheckResume();
+            await getResumeAnalysis(file);
         }
         
     }
 
-    // display in html
-    const displayParsedData = (parsedData) => {
-        const data = JSON.parse(parsedData);
-    
-        const resultContainer = document.getElementById('results');
-        
-
-        resultContainer.innerHTML = '';
-        
-
-        let resultHtml = `
-            <h5><strong>Name:</strong> ${data.name}</h5>
-            <h5><strong>Email:</strong> ${data.email}</h5>
-            <hr>
-        `;
-        
-
-        resultHtml += `
-            <h5><strong>Skills:</strong></h5>
-            <ul class="list-group">
-        `;
-        
-        data.skills.forEach(skill => {
-            resultHtml += `<li class="list-group-item">${skill}</li>`;
-        });
-        resultHtml += '</ul><hr>';
-        
-
-        resultHtml += `
-            <h5><strong>Education:</strong></h5>
-            <ul class="list-group">
-        `;
-        
-        data.education.forEach(edu => {
-            resultHtml += `
-                <li class="list-group-item">
-                    <strong>${edu.name}</strong><br>
-                    <small>${edu.dates.join(', ')}</small>
-                </li>
-            `;
-        });
-        resultHtml += '</ul><hr>';
-        
-        resultHtml += `
-            <h5><strong>Experience:</strong></h5>
-            <ul class="list-group">
-        `;
-        
-        data.experience.forEach(exp => {
-            resultHtml += `
-                <li class="list-group-item">
-                    <strong>${exp.title}</strong><br>
-                    <small>${exp.dates.join(' - ')}</small><br>
-                    <strong>Location:</strong> ${exp.location}<br>
-                    <strong>Organization:</strong> ${exp.organization}
-                </li>
-            `;
-        });
-        resultHtml += '</ul>';
-    
-        resultContainer.innerHTML = resultHtml;
-        displaySection(navigation.evaluation)
-
-    };
 
     const displaySection = (state) => {
         const sections = document.querySelectorAll("section");
