@@ -1,20 +1,21 @@
-Setting up...
+WEBSITE: AI Resume Checker
 
-WEBSITE: AI Checker
-
-Landing page: 
-    - resume checker using image to text and AI scanning
-
-multer 
-socket.io
+Library/Modules 
 express 
 bycrypt 
 mongoose
 node-fetch
-      
+openai
+
 API's:
     Openchat
-    Drawing
-    Idea    
-    api meme
-    
+
+Instructions: 
+
+In VSCode make sure to delete and download new modules.
+
+In terminal run: npm install express
+
+Open browser (chrome or firefox) and type in http://localhost:3000/ 
+
+In terminal run node server/server.js 

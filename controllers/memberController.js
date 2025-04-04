@@ -20,19 +20,15 @@ memberController.post('/signup', util.logRequest, async (request, response) => {
         'Status Code': response.statusCode,
     }
     const { email, password } = request.body
-    // console.log(`\t|Password = ${password}`)
     let hashed = await bcrypt.hash(password, config.SALT_ROUNDS)
-    // console.log(`${password} hash is ${hashed}`)
     const member = user(email, hashed)
     if (members.length === 0)
         members = utils.readJson(config.MEMBERS)
-    //console.log(members)
     const isMember = members.filter((m) => m.email === email)[0]
     if (!isMember) {
         members.push(member)
         console.info(members)
         authenticated.push(email)
-        //util.insertOne(collection, members[members.length - 1])
         utils.saveJson(config.MEMBERS, JSON.stringify(members))
         response
             .status(200)
@@ -62,7 +58,6 @@ memberController.post('/signin',util.logRequest, async (request, response) => {
     const { email, password } = request.body
     if (members.length === 0)
         members = utils.readJson(config.MEMBERS)
-    // console.log(members)
     const error = {
         email: email,
         error: `Email or password is incorrect.`,
@@ -90,7 +85,6 @@ memberController.post('/signin',util.logRequest, async (request, response) => {
 })
 
 memberController.post('/signout',util.logRequest, (request, response) => {
-    // console.log('inside /signout')
     let collection = client.db().collection('members')
     let log = {
         Timestamp: new Date(),
@@ -100,7 +94,6 @@ memberController.post('/signout',util.logRequest, (request, response) => {
         'Status Code': response.statusCode,
     }
     email = request.body.email
-    // console.log("authenticated", authenticated)
     authenticated.splice(authenticated.indexOf(email), 1)
     console.log("authenticated", authenticated)
     response

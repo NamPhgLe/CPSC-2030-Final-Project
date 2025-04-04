@@ -625,3 +625,17 @@
 {"date":"2025-03-19T22:59:30.248Z","url":"/api/user/signin","method":"POST"}
 {"date":"2025-04-03T08:42:33.265Z","url":"/api/userStats","method":"GET"}
 {"date":"2025-04-03T08:42:48.528Z","url":"/api/checkResumeFile","method":"POST"}
+{"date":"2025-04-03T08:47:27.537Z","url":"/api/userStats","method":"GET"}
+{"date":"2025-04-03T08:47:35.550Z","url":"/api/checkResumeFile","method":"POST"}
+{"date":"2025-04-03T09:20:42.235Z","url":"/api/userStats","method":"GET"}
+{"date":"2025-04-03T09:20:56.188Z","url":"/api/checkResumeFile","method":"POST"}
+{"date":"2025-04-03T09:21:13.949Z","url":"/api/user/signout","method":"POST"}
+{"date":"2025-04-04T00:14:57.750Z","url":"/api/user/signin","method":"POST"}
+{"date":"2025-04-04T00:14:58.043Z","url":"/api/userStats","method":"GET"}
+{"date":"2025-04-04T00:14:59.779Z","url":"/api/user/signout","method":"POST"}
+{"date":"2025-04-04T00:15:02.879Z","url":"/api/user/signin","method":"POST"}
+{"date":"2025-04-04T00:15:03.116Z","url":"/api/userStats","method":"GET"}
+{"date":"2025-04-04T00:15:04.554Z","url":"/api/user/signout","method":"POST"}
+{"date":"2025-04-04T00:15:09.678Z","url":"/api/checkResumeFile","method":"POST"}
+{"date":"2025-04-04T00:15:18.887Z","url":"/api/user/signin","method":"POST"}
+{"date":"2025-04-04T00:15:19.128Z","url":"/api/userStats","method":"GET"}
