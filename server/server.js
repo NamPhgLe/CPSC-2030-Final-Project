@@ -11,7 +11,7 @@
     const path = require('path');
     const app = express()
 
-    connectToMongo("mongodb+srv://mongo:mongo@cluster2030.9fajz.mongodb.net/");
+    connectToMongo("mongodb+srv://mongo:mongo@cluster2030.hmk6s8q.mongodb.net/");
 
     
     app.use(express.static(config.ROOT))
